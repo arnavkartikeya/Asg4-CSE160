@@ -33,6 +33,7 @@ uniform sampler2D u_Sampler0;
 uniform sampler2D u_Sampler1;
 uniform sampler2D u_Sampler2;
 uniform sampler2D u_Sampler3;
+uniform vec3 u_lightColor;
 uniform bool u_lightOn; 
 uniform vec3 u_lightPos;   
 varying vec4 v_VertPos; 
@@ -73,12 +74,13 @@ void main() {
     vec3 N = normalize(v_Normal); 
     
     float dotProd = max(dot(N, L), 0.0); 
-    vec3 diffuse = baseColor * dotProd * 0.7; 
-    vec3 ambient = baseColor * 0.3; 
+    vec3 diffuse = baseColor * dotProd * u_lightColor * 0.7; 
+    vec3 ambient = baseColor * u_lightColor * 0.3; 
     
     vec3 R = reflect(-L, N); 
     vec3 E = normalize(u_cameraPos - vec3(v_VertPos));
-    float specular = pow(max(dot(E, R), 0.0), 64.0) * 0.8;
+    float specularIntensity = pow(max(dot(E, R), 0.0), 64.0) * 0.8;
+    vec3 specular = u_lightColor * specularIntensity;
     
     vec3 spotLightVector = u_spotLightPos - vec3(v_VertPos);
     vec3 spotL = normalize(spotLightVector);
@@ -89,7 +91,7 @@ void main() {
         // Both lights are on
         vec3 finalColor = ambient;
         
-        finalColor += diffuse + vec3(specular);
+        finalColor += diffuse + specular;
         
         if (cosAngle > u_spotCutoff) {
             float spotEffect = pow((cosAngle - u_spotCutoff) / (1.0 - u_spotCutoff), 2.0);
@@ -107,7 +109,7 @@ void main() {
         gl_FragColor = vec4(finalColor, 1.0);
     } 
     else if (u_lightOn) {
-        gl_FragColor = vec4(ambient + diffuse + vec3(specular), 1.0);
+        gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
     } 
     else if (u_spotLightOn) {
         vec3 finalColor = ambient;
@@ -139,6 +141,7 @@ let u_lightPos;
 let u_cameraPos; 
 let u_spotCutoff;
 let u_spotDirection;
+let u_lightColor; 
 
 
 let g_globalAngle = 0; 
@@ -185,6 +188,19 @@ let cSegments = 10;
 let g_headPos = 0;
 let g_lightPos = [0, 10, -7]; 
 
+function hexToRgb(hex) {
+  hex = hex.replace(/^#/, '');
+  if(hex.length === 3) {
+      hex = hex.split('').map(h => h + h).join('');
+  }
+  let bigint = parseInt(hex, 16);
+  let r = (bigint >> 16) & 255;
+  let g = (bigint >> 8) & 255;
+  let b = bigint & 255;
+  return { r, g, b };
+}
+
+
 function addActionsForHtmlUI(){
   document.getElementById('angleSlide').addEventListener('input', function() {
     g_globalAngle = -1 * this.value;
@@ -192,6 +208,12 @@ function addActionsForHtmlUI(){
   });
   document.getElementById('verticalSlide').addEventListener('input', function() {
     g_verticalAngle = -1 * this.value;
+    renderAllShapes();
+  });
+
+  document.getElementById('lightColor').addEventListener('input', function() {
+    let rgb = hexToRgb(this.value);
+    gl.uniform3f(u_lightColor, rgb.r / 255, rgb.g / 255, rgb.b / 255);
     renderAllShapes();
   });
 
@@ -298,6 +320,14 @@ function connectVariablesToGLSL(){
     console.log('Failed to intialize shaders.');
     return;
   }
+
+  u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
+  if (!u_lightColor) {
+    console.log('Failed to get the storage location of u_lightColor');
+    return;
+  }
+  gl.uniform3f(u_lightColor, 1.0, 1.0, 1.0);
+
 
   u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
   if (!u_cameraPos) {
