@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Change a point color</title>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="600" height="600">
+    Please use a browser that supports "canvas"
+    </canvas>
+
+
+    <p id="numdot">XXX</p>
+
+    <p id="timer">Time: 0.00</p>
+    <p id="winText"></p>
+    <p><button id="resetBtn">Reset Game</button></p>
+
+    <p>
+      <button id="normalOn">Normals On</button>
+      <button id="normalOff">Normals Off</button>
+    </p>
+
+    <p>
+      Light X <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideX">
+      Light Y <input type="range" min="-250" max="250" value="100" class="slider" id="lightSlideY">
+      Light Z <input type="range" min="-250" max="250" value="-200" class="slider" id="lightSlideZ">
+    </p>
+
+    <p>
+      <button id="lightOn">Light On</button>
+      <button id="lightOff">Light Off</button>
+      <button id="spotLightOn">Spot Light On</button>
+      <button id="spotLightOff">Spot Light Off</button>
+    </p>
+
+    <p><button id="lightMove">Animate Light</button></p>
+
+    <p>
+      Spotlight Direction X: <input type="range" id="spotDirX" min="-100" max="100" value="0">
+      Y: <input type="range" id="spotDirY" min="-100" max="100" value="-100">
+      Z: <input type="range" id="spotDirZ" min="-100" max="100" value="0">
+  </p>
+
+    <p>
+    Camera Angle <input type="range" min="-90" max="90" value="5" class="slider" id="angleSlide">
+
+    <p>Vertical Camera Angle <input type="range" min="-90" max="90" value="5" class="slider" id="verticalSlide"></p>
+
+    <hr>
+    <div style="margin-top: 20px; font-family: Arial, sans-serif;">
+        <p>Name: Arnav Kartikeya</p>
+        <p>Email: akartike@ucsc.edu</p>
+        <p>Assignment: Lab 04</p>
+        <p>3d world with a randomly generated forest</p>
+        <p>The light animation will have the yellow light source rotate in a circular configuration</p>
+        <p>Specular, diffuse, and ambient lighting are implemented</p>
+        <p>There is a redish spotlight, which when changing the x and z sliders will change its angle of cone</p>
+    </div>
+    <hr>
+
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Point.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="Camera.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Ellipsoid.js"></script>
+    <script src="World.js"></script>
+  </body>
+</html>
